@@ -1,0 +1,84 @@
+今天=日期时间。现在()
+
+# 微信公众测试号ID和SECRET
+app_id=os。环境[“APP_ID”]
+app_secret=os。环境[“APP_SECRET”]
+
+# 可把os.environ结果替换成字符串在本地调试
+user_ids=os。环境[“USER_ID”]。分裂（'，')
+template_ids=操作系统。环境[“TEMPLATE_ID”]。分裂（'，')
+城市=OS。环境[“城市”]。分裂（'，')
+太阳=OS。环境[“阳光”]。分裂（'，')
+start_dates=os。环境[“START_DATE”]。分裂（'，')
+生日=OS。环境[“生日”]。分裂（'，')
+
+
+# 获取天气和温度
+get_weather（城市）：
+    网址=“http://autodev.openspeech.cn/csp/api/v2.1/weather?openId=aiuicus&clientType=android&sign=android&city=”+城市
+    res=请求。获取（网址）。杰森()
+    天气=res['data']['list'][0]
+    返回天气['天气']，数学。地板（天气['温度'])
+
+
+# 当前城市、日期
+定义get_city_date（城市）：
+    今天返回城市。日期（）。strftime（“%Y-%m-%d”)
+
+
+# 距离设置的日期过了多少天
+defget_count（start_date）：
+    delta=今天-日期时间。strptime（start_date，“%Y-%m-%d”)
+    返回增量。日
+
+
+# 距离发工资还有多少天
+defget_solary（阳光）：
+    下一个=日期时间。strptime（str（date.今天（）。年）+“-”+str（日期。今天（）。月）+“-”+solary，“%Y-%m-%d”)
+    如果下一个<日期时间。现在（）：
+        下一个=下一个。替换（月=下一个。月+1)
+    返回（下今天）。日
+
+
+# 距离过生日还有多少天
+get_birthday（生日）：
+    下一个=日期时间。strptime（str（date.今天（）。年）+“-”+生日，“%Y-%m-%d”)
+    如果下一个<日期时间。现在（）：
+        下一个=下一个。替换（年=下一个。年+1)
+    返回（下今天）。日
+
+
+# 每日一句
+defget_words（）：
+    字=请求。获取（“https://api.shadiao.pro/chp”)
+    如果的话。status_code！=200：
+        返回get_words()
+    返回单词。json（）['data']['text']
+
+
+# 字体随机颜色
+defget_random_color（）：
+    返回“#%06X”%随机。兰丁（0，0xFFFFFF)
+
+
+client=微信客户端（app_id，app_secret)
+wm=微信消息（客户端）)
+
+对于范围内的 i（len（user_ids））：
+    wea，tem=get_weather（citiess[i])
+    cit，dat=get_city_date（citiess[i])
+    数据 = {
+        “date”： {“value”：“今日日期：{}”。format（dat），“color”：get_random_color（）}，
+        “city”： {“value”：“当前城市：{}”。format（cit），“color”：get_random_color（）}，
+        “天气”： {“值”：“今日天气：{}”.format（wea），“color”：get_random_color（）}，
+        “温度”： {“值”：“当前温度：{}”.format（tem），“color”：get_random_color（）}，
+        “love_days”： {“value”：“今天是你们在一起的第{}天”.format（get_count（start_dates[i]）），“color”：get_random_color（）}，
+        “birthday_left”： {“value”：“距离她的生日还有{}天”.format（get_birthday（birthdays[i]）），“color”：get_random_color（）}，
+        “solary”： {“value”：“距离发工资还有{}天”.format（get_solary（solarys[i]）），“color”：get_random_color（）}，
+        “单词”： {“值”：get_words（），“颜色”：get_random_color()}
+    }
+    如果get_birthday（生日[i]）==0：
+        data[“birthday_left”]['value']=“今天是她的生日哦，快去一起甜蜜吧”
+    如果get_solary（Solarys[i]）==0：
+        data[“solary”]['value']=“今天发工资啦，快去犒劳一下自己吧”
+    res=wm。send_template（user_ids[i]，template_ids[i]，数据)
